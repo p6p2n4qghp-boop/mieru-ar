@@ -1,6 +1,7 @@
 const video = document.getElementById("camera");
 const button = document.getElementById("startAR");
 const labels = document.querySelectorAll(".label");
+const debug = document.getElementById("debug");
 
 let startAngle = null;
 
@@ -20,19 +21,16 @@ button.addEventListener("click", async () => {
             }
         }
 
-        // 背面カメラを起動
+        // 背面カメラを開始
         const stream = await navigator.mediaDevices.getUserMedia({
             video: {
-                facingMode: {
-                    ideal: "environment"
-                }
+                facingMode: { ideal: "environment" }
             },
             audio: false
         });
 
         video.srcObject = stream;
 
-        // スマホの向きを取得
         window.addEventListener(
             "deviceorientation",
             handleOrientation,
@@ -42,32 +40,41 @@ button.addEventListener("click", async () => {
         button.style.display = "none";
     } catch (error) {
         console.error(error);
-        alert(
-            "カメラまたはスマホの向きを利用できませんでした。Safariの設定を確認してください。"
-        );
+        alert("カメラまたは向きセンサーを開始できませんでした。");
     }
 });
 
 function handleOrientation(event) {
-    if (event.alpha === null) return;
+    // iPhoneではwebkitCompassHeadingの方が安定することがある
+    let angle;
 
-    // AR開始時の向きを基準にする
-    if (startAngle === null) {
-        startAngle = event.alpha;
+    if (typeof event.webkitCompassHeading === "number") {
+        angle = event.webkitCompassHeading;
+    } else {
+        angle = event.alpha;
     }
 
-    let difference = event.alpha - startAngle;
+    if (angle === null || angle === undefined) {
+        debug.textContent = "角度：取得できていません";
+        return;
+    }
 
-    // 0度と360度をまたいだ際の補正
+    debug.textContent = `角度：${Math.round(angle)}°`;
+
+    if (startAngle === null) {
+        startAngle = angle;
+    }
+
+    let difference = angle - startAngle;
+
     if (difference > 180) difference -= 360;
     if (difference < -180) difference += 360;
 
-    // スマホを回した方向に合わせてラベルを移動
     labels.forEach((label, index) => {
-        const depth = 1 - index * 0.15;
-        const movement = difference * 4 * depth;
+        const movement = difference * 10;
+        const depthScale = 1 - index * 0.15;
 
         label.style.transform =
-            `translateX(${movement}px)`;
+            `translateX(${movement * depthScale}px)`;
     });
 }
