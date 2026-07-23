@@ -34,11 +34,13 @@
             background: rgba(0, 0, 0, 0.72);
             color: white;
             text-align: center;
+            font-size: 16px;
         }
     </style>
 </head>
 
 <body>
+
     <div class="guide">
         HIROマーカーを映してください
     </div>
@@ -48,47 +50,33 @@
 
         <a-marker preset="hiro">
 
-            <a-marker preset="hiro">
+            <!-- 左：EXHIBITION -->
+            <a-plane position="-0.8 0.8 0" rotation="-90 0 0" width="1.4" height="0.45" color="#ffffff"
+                material="side: double"></a-plane>
 
-                <!-- 左 -->
-                <a-entity position="-0.8 0.8 0" rotation="-90 0 0" geometry="primitive: plane; width: 1.4; height: 0.45"
-                    material="color: #ffffff; side: double" text="
-      value: EXHIBITION;
-      align: center;
-      anchor: center;
-      baseline: center;
-      color: #111111;
-      width: 2.5;
-      side: double;
-    "></a-entity>
+            <a-text value="EXHIBITION" position="-0.8 0.81 -0.01" rotation="-90 0 0" align="center" anchor="center"
+                color="#111111" width="2.5" material="side: double"></a-text>
 
-                <!-- 右 -->
-                <a-entity position="0.8 0.8 0" rotation="-90 0 0" geometry="primitive: plane; width: 1.4; height: 0.45"
-                    material="color: #ffffff; side: double" text="
-      value: WORKSHOP;
-      align: center;
-      anchor: center;
-      baseline: center;
-      color: #111111;
-      width: 2.5;
-      side: double;
-    "></a-entity>
+            <!-- 右：WORKSHOP -->
+            <a-plane position="0.8 0.8 0" rotation="-90 0 0" width="1.4" height="0.45" color="#ffffff"
+                material="side: double"></a-plane>
 
-                <!-- 奥 -->
-                <a-entity position="0 0.8 -0.9" rotation="-90 0 0" geometry="primitive: plane; width: 1.2; height: 0.45"
-                    material="color: #ffffff; side: double" text="
-      value: REST;
-      align: center;
-      anchor: center;
-      baseline: center;
-      color: #111111;
-      width: 2.5;
-      side: double;
-    "></a-entity>
+            <a-text value="WORKSHOP" position="0.8 0.81 -0.01" rotation="-90 0 0" align="center" anchor="center"
+                color="#111111" width="2.5" material="side: double"></a-text>
 
-            </a-marker>
-            <a-entity camera></a-entity>
+            <!-- 奥：REST -->
+            <a-plane position="0 0.8 -0.9" rotation="-90 0 0" width="1.2" height="0.45" color="#ffffff"
+                material="side: double"></a-plane>
+
+            <a-text value="REST" position="0 0.81 -0.91" rotation="-90 0 0" align="center" anchor="center"
+                color="#111111" width="2.5" material="side: double"></a-text>
+
+        </a-marker>
+
+        <a-entity camera></a-entity>
+
     </a-scene>
+
 </body>
 
 </html>
