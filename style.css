@@ -78,3 +78,26 @@ body {
     background: white;
 
 }
+
+.label {
+    transition: transform 0.08s linear;
+    will-change: transform;
+}
+
+#startAR {
+    position: fixed;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+
+    padding: 14px 28px;
+    border: none;
+    border-radius: 999px;
+
+    background: white;
+    color: black;
+
+    font-size: 18px;
+    font-weight: bold;
+}
