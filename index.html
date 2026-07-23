@@ -6,179 +6,67 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
-    <title>北泉橋 AR</title>
+    <title>みえる？｜北泉橋AR</title>
+
+    <link rel="stylesheet" href="./style.css">
 
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
 
-    <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            font-family:
-                -apple-system,
-                BlinkMacSystemFont,
-                "Hiragino Sans",
-                "Yu Gothic",
-                sans-serif;
-        }
-
-        .guide {
-            position: fixed;
-            left: 50%;
-            bottom: 24px;
-            transform: translateX(-50%);
-            z-index: 9999;
-
-            width: calc(100% - 40px);
-            max-width: 420px;
-            padding: 13px 18px;
-            box-sizing: border-box;
-
-            border-radius: 999px;
-            background: rgba(0, 0, 0, 0.75);
-            color: white;
-
-            text-align: center;
-            font-size: 16px;
-        }
-
-        canvas {
-            display: none;
-        }
-    </style>
-
-    <script>
-        AFRAME.registerComponent("marker-message", {
-            init: function () {
-                const guide = document.getElementById("guide");
-
-                this.el.addEventListener("markerFound", function () {
-                    guide.textContent = "北泉橋の展示情報がみえる！";
-                });
-
-                this.el.addEventListener("markerLost", function () {
-                    guide.textContent = "HIROマーカーを映してください";
-                });
-            }
-        });
-
-        function drawLabel(canvasId, title, subtitle) {
-            const canvas = document.getElementById(canvasId);
-            const ctx = canvas.getContext("2d");
-
-            canvas.width = 1200;
-            canvas.height = 400;
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // 影
-            ctx.shadowColor = "rgba(0, 0, 0, 0.25)";
-            ctx.shadowBlur = 30;
-            ctx.shadowOffsetY = 12;
-
-            // 白い角丸背景
-            ctx.fillStyle = "#ffffff";
-            roundedRect(ctx, 25, 25, 1150, 330, 100);
-            ctx.fill();
-
-            ctx.shadowColor = "transparent";
-
-            // ピン
-            ctx.fillStyle = "#e64242";
-            ctx.beginPath();
-            ctx.arc(125, 175, 42, 0, Math.PI * 2);
-            ctx.fill();
-
-            ctx.beginPath();
-            ctx.moveTo(98, 202);
-            ctx.lineTo(125, 270);
-            ctx.lineTo(152, 202);
-            ctx.closePath();
-            ctx.fill();
-
-            ctx.fillStyle = "#ffffff";
-            ctx.beginPath();
-            ctx.arc(125, 175, 17, 0, Math.PI * 2);
-            ctx.fill();
-
-            // タイトル
-            ctx.fillStyle = "#111111";
-            ctx.font = "bold 76px sans-serif";
-            ctx.textBaseline = "middle";
-            ctx.fillText(title, 215, 150);
-
-            // サブタイトル
-            ctx.fillStyle = "#555555";
-            ctx.font = "42px sans-serif";
-            ctx.fillText(subtitle, 215, 245);
-        }
-
-        function roundedRect(ctx, x, y, width, height, radius) {
-            ctx.beginPath();
-            ctx.moveTo(x + radius, y);
-            ctx.lineTo(x + width - radius, y);
-            ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-            ctx.lineTo(x + width, y + height - radius);
-            ctx.quadraticCurveTo(
-                x + width,
-                y + height,
-                x + width - radius,
-                y + height
-            );
-            ctx.lineTo(x + radius, y + height);
-            ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-            ctx.lineTo(x, y + radius);
-            ctx.quadraticCurveTo(x, y, x + radius, y);
-            ctx.closePath();
-        }
-
-        window.addEventListener("load", function () {
-            drawLabel(
-                "labelExhibition",
-                "ここで個展",
-                "学生作品の展示"
-            );
-
-            drawLabel(
-                "labelWorkshop",
-                "染色ワークショップ",
-                "橋の下で体験できます"
-            );
-
-            drawLabel(
-                "labelRest",
-                "休憩スペース",
-                "川を眺めながらひと休み"
-            );
-
-            // Canvasを書き換えたことをA-Frameへ伝える
-            document.querySelectorAll("[material]").forEach(function (entity) {
-                const mesh = entity.getObject3D("mesh");
-
-                if (
-                    mesh &&
-                    mesh.material &&
-                    mesh.material.map
-                ) {
-                    mesh.material.map.needsUpdate = true;
-                }
-            });
-        });
-    </script>
+    <script src="./main.js"></script>
 </head>
 
 <body>
 
+    <!-- 画面下の案内 -->
     <div class="guide" id="guide">
         HIROマーカーを映してください
     </div>
 
-    <!-- 日本語ラベルを描画するCanvas -->
-    <canvas id="labelExhibition"></canvas>
-    <canvas id="labelWorkshop"></canvas>
-    <canvas id="labelRest"></canvas>
+    <!-- ARラベル用 -->
+    <canvas id="label-0" class="label-canvas"></canvas>
+    <canvas id="label-1" class="label-canvas"></canvas>
+    <canvas id="label-2" class="label-canvas"></canvas>
 
+    <!-- タップしたときの情報カード -->
+    <div class="modal" id="modal" aria-hidden="true">
+
+        <div class="modal-backdrop" id="modal-backdrop"></div>
+
+        <article class="info-card">
+
+            <button class="close-button" id="close-button" type="button" aria-label="閉じる">
+                ×
+            </button>
+
+            <p class="card-number" id="card-number">
+                01
+            </p>
+
+            <h1 id="card-title">
+                個展
+            </h1>
+
+            <p class="card-english" id="card-english">
+                EXHIBITION
+            </p>
+
+            <div class="card-line"></div>
+
+            <p class="card-description" id="card-description">
+                展示内容がここに入ります。
+            </p>
+
+            <div class="card-placeholder">
+                IMAGE / MOVIE
+            </div>
+
+        </article>
+
+    </div>
+
+    <!-- AR空間 -->
     <a-scene embedded vr-mode-ui="enabled: false" renderer="
             logarithmicDepthBuffer: true;
             antialias: true;
@@ -189,36 +77,25 @@
             detectionMode: mono;
         ">
 
-        <a-marker preset="hiro" marker-message smooth="true" smooth-count="10" smooth-tolerance="0.01"
+        <a-marker id="hiro-marker" preset="hiro" smooth="true" smooth-count="10" smooth-tolerance="0.01"
             smooth-threshold="5">
 
-            <!-- 個展 -->
-            <a-plane position="-0.85 0.8 0" rotation="-90 0 0" width="1.65" height="0.55" material="
-                    src: #labelExhibition;
-                    transparent: true;
-                    side: double;
-                    shader: flat;
-                "></a-plane>
+            <!-- サイン01 -->
+            <a-plane class="clickable" data-spot="0" position="-0.75 0.35 0.15" rotation="-90 0 -8" width="1.25"
+                height="0.42" canvas-texture="canvas: #label-0" spot-card></a-plane>
 
-            <!-- 染色ワークショップ -->
-            <a-plane position="0.9 0.8 -0.15" rotation="-90 0 0" width="1.8" height="0.6" material="
-                    src: #labelWorkshop;
-                    transparent: true;
-                    side: double;
-                    shader: flat;
-                "></a-plane>
+            <!-- サイン02 -->
+            <a-plane class="clickable" data-spot="1" position="0.72 0.48 -0.15" rotation="-90 0 7" width="1.45"
+                height="0.48" canvas-texture="canvas: #label-1" spot-card></a-plane>
 
-            <!-- 休憩 -->
-            <a-plane position="0 0.8 -1" rotation="-90 0 0" width="1.55" height="0.52" material="
-                    src: #labelRest;
-                    transparent: true;
-                    side: double;
-                    shader: flat;
-                "></a-plane>
+            <!-- サイン03 -->
+            <a-plane class="clickable" data-spot="2" position="-0.05 0.28 -0.95" rotation="-90 0 -2" width="1.15"
+                height="0.39" canvas-texture="canvas: #label-2" spot-card></a-plane>
 
         </a-marker>
 
-        <a-entity camera></a-entity>
+        <!-- タップ判定 -->
+        <a-entity camera cursor="rayOrigin: mouse; fuse: false" raycaster="objects: .clickable"></a-entity>
 
     </a-scene>
 
