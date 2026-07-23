@@ -48,27 +48,46 @@
 
         <a-marker preset="hiro">
 
-            <!-- 左のラベル -->
-            <a-plane position="-0.8 0.8 0" rotation="-90 0 0" width="1.25" height="0.42" color="#ffffff"></a-plane>
+            <a-marker preset="hiro">
 
-            <a-text value="EXHIBITION" position="-0.8 0.81 0" rotation="-90 0 0" align="center" color="#111111"
-                width="2.8"></a-text>
+                <!-- 左 -->
+                <a-entity position="-0.8 0.8 0" rotation="-90 0 0" geometry="primitive: plane; width: 1.4; height: 0.45"
+                    material="color: #ffffff; side: double" text="
+      value: EXHIBITION;
+      align: center;
+      anchor: center;
+      baseline: center;
+      color: #111111;
+      width: 2.5;
+      side: double;
+    "></a-entity>
 
-            <!-- 右のラベル -->
-            <a-plane position="0.8 0.8 0" rotation="-90 0 0" width="1.25" height="0.42" color="#ffffff"></a-plane>
+                <!-- 右 -->
+                <a-entity position="0.8 0.8 0" rotation="-90 0 0" geometry="primitive: plane; width: 1.4; height: 0.45"
+                    material="color: #ffffff; side: double" text="
+      value: WORKSHOP;
+      align: center;
+      anchor: center;
+      baseline: center;
+      color: #111111;
+      width: 2.5;
+      side: double;
+    "></a-entity>
 
-            <a-text value="WORKSHOP" position="0.8 0.81 0" rotation="-90 0 0" align="center" color="#111111"
-                width="2.8"></a-text>
+                <!-- 奥 -->
+                <a-entity position="0 0.8 -0.9" rotation="-90 0 0" geometry="primitive: plane; width: 1.2; height: 0.45"
+                    material="color: #ffffff; side: double" text="
+      value: REST;
+      align: center;
+      anchor: center;
+      baseline: center;
+      color: #111111;
+      width: 2.5;
+      side: double;
+    "></a-entity>
 
-            <!-- 奥のラベル -->
-            <a-plane position="0 0.8 -0.9" rotation="-90 0 0" width="1.1" height="0.42" color="#ffffff"></a-plane>
-
-            <a-text value="REST" position="0 0.81 -0.9" rotation="-90 0 0" align="center" color="#111111"
-                width="2.8"></a-text>
-
-        </a-marker>
-
-        <a-entity camera></a-entity>
+            </a-marker>
+            <a-entity camera></a-entity>
     </a-scene>
 </body>
 
