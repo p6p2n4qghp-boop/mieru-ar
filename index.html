@@ -15,7 +15,12 @@
         body {
             margin: 0;
             overflow: hidden;
-            font-family: sans-serif;
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Hiragino Sans",
+                "Yu Gothic",
+                sans-serif;
         }
 
         .guide {
@@ -27,49 +32,189 @@
 
             width: calc(100% - 40px);
             max-width: 420px;
-            padding: 12px 16px;
+            padding: 13px 18px;
             box-sizing: border-box;
 
             border-radius: 999px;
-            background: rgba(0, 0, 0, 0.72);
+            background: rgba(0, 0, 0, 0.75);
             color: white;
+
             text-align: center;
             font-size: 16px;
         }
+
+        canvas {
+            display: none;
+        }
     </style>
+
+    <script>
+        AFRAME.registerComponent("marker-message", {
+            init: function () {
+                const guide = document.getElementById("guide");
+
+                this.el.addEventListener("markerFound", function () {
+                    guide.textContent = "北泉橋の展示情報がみえる！";
+                });
+
+                this.el.addEventListener("markerLost", function () {
+                    guide.textContent = "HIROマーカーを映してください";
+                });
+            }
+        });
+
+        function drawLabel(canvasId, title, subtitle) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext("2d");
+
+            canvas.width = 1200;
+            canvas.height = 400;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 影
+            ctx.shadowColor = "rgba(0, 0, 0, 0.25)";
+            ctx.shadowBlur = 30;
+            ctx.shadowOffsetY = 12;
+
+            // 白い角丸背景
+            ctx.fillStyle = "#ffffff";
+            roundedRect(ctx, 25, 25, 1150, 330, 100);
+            ctx.fill();
+
+            ctx.shadowColor = "transparent";
+
+            // ピン
+            ctx.fillStyle = "#e64242";
+            ctx.beginPath();
+            ctx.arc(125, 175, 42, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.moveTo(98, 202);
+            ctx.lineTo(125, 270);
+            ctx.lineTo(152, 202);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.fillStyle = "#ffffff";
+            ctx.beginPath();
+            ctx.arc(125, 175, 17, 0, Math.PI * 2);
+            ctx.fill();
+
+            // タイトル
+            ctx.fillStyle = "#111111";
+            ctx.font = "bold 76px sans-serif";
+            ctx.textBaseline = "middle";
+            ctx.fillText(title, 215, 150);
+
+            // サブタイトル
+            ctx.fillStyle = "#555555";
+            ctx.font = "42px sans-serif";
+            ctx.fillText(subtitle, 215, 245);
+        }
+
+        function roundedRect(ctx, x, y, width, height, radius) {
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + width - radius, y);
+            ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+            ctx.lineTo(x + width, y + height - radius);
+            ctx.quadraticCurveTo(
+                x + width,
+                y + height,
+                x + width - radius,
+                y + height
+            );
+            ctx.lineTo(x + radius, y + height);
+            ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+            ctx.lineTo(x, y + radius);
+            ctx.quadraticCurveTo(x, y, x + radius, y);
+            ctx.closePath();
+        }
+
+        window.addEventListener("load", function () {
+            drawLabel(
+                "labelExhibition",
+                "ここで個展",
+                "学生作品の展示"
+            );
+
+            drawLabel(
+                "labelWorkshop",
+                "染色ワークショップ",
+                "橋の下で体験できます"
+            );
+
+            drawLabel(
+                "labelRest",
+                "休憩スペース",
+                "川を眺めながらひと休み"
+            );
+
+            // Canvasを書き換えたことをA-Frameへ伝える
+            document.querySelectorAll("[material]").forEach(function (entity) {
+                const mesh = entity.getObject3D("mesh");
+
+                if (
+                    mesh &&
+                    mesh.material &&
+                    mesh.material.map
+                ) {
+                    mesh.material.map.needsUpdate = true;
+                }
+            });
+        });
+    </script>
 </head>
 
 <body>
 
-    <div class="guide">
+    <div class="guide" id="guide">
         HIROマーカーを映してください
     </div>
 
-    <a-scene embedded vr-mode-ui="enabled: false" renderer="logarithmicDepthBuffer: true;"
-        arjs="sourceType: webcam; debugUIEnabled: false;">
+    <!-- 日本語ラベルを描画するCanvas -->
+    <canvas id="labelExhibition"></canvas>
+    <canvas id="labelWorkshop"></canvas>
+    <canvas id="labelRest"></canvas>
 
-        <a-marker preset="hiro">
+    <a-scene embedded vr-mode-ui="enabled: false" renderer="
+            logarithmicDepthBuffer: true;
+            antialias: true;
+            alpha: true;
+        " arjs="
+            sourceType: webcam;
+            debugUIEnabled: false;
+            detectionMode: mono;
+        ">
 
-            <!-- 左：EXHIBITION -->
-            <a-plane position="-0.8 0.8 0" rotation="-90 0 0" width="1.4" height="0.45" color="#ffffff"
-                material="side: double"></a-plane>
+        <a-marker preset="hiro" marker-message smooth="true" smooth-count="10" smooth-tolerance="0.01"
+            smooth-threshold="5">
 
-            <a-text value="EXHIBITION" position="-0.8 0.81 -0.01" rotation="-90 0 0" align="center" anchor="center"
-                color="#111111" width="2.5" material="side: double"></a-text>
+            <!-- 個展 -->
+            <a-plane position="-0.85 0.8 0" rotation="-90 0 0" width="1.65" height="0.55" material="
+                    src: #labelExhibition;
+                    transparent: true;
+                    side: double;
+                    shader: flat;
+                "></a-plane>
 
-            <!-- 右：WORKSHOP -->
-            <a-plane position="0.8 0.8 0" rotation="-90 0 0" width="1.4" height="0.45" color="#ffffff"
-                material="side: double"></a-plane>
+            <!-- 染色ワークショップ -->
+            <a-plane position="0.9 0.8 -0.15" rotation="-90 0 0" width="1.8" height="0.6" material="
+                    src: #labelWorkshop;
+                    transparent: true;
+                    side: double;
+                    shader: flat;
+                "></a-plane>
 
-            <a-text value="WORKSHOP" position="0.8 0.81 -0.01" rotation="-90 0 0" align="center" anchor="center"
-                color="#111111" width="2.5" material="side: double"></a-text>
-
-            <!-- 奥：REST -->
-            <a-plane position="0 0.8 -0.9" rotation="-90 0 0" width="1.2" height="0.45" color="#ffffff"
-                material="side: double"></a-plane>
-
-            <a-text value="REST" position="0 0.81 -0.91" rotation="-90 0 0" align="center" anchor="center"
-                color="#111111" width="2.5" material="side: double"></a-text>
+            <!-- 休憩 -->
+            <a-plane position="0 0.8 -1" rotation="-90 0 0" width="1.55" height="0.52" material="
+                    src: #labelRest;
+                    transparent: true;
+                    side: double;
+                    shader: flat;
+                "></a-plane>
 
         </a-marker>
 
