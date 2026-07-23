@@ -6,98 +6,105 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
-    <title>みえる？｜北泉橋AR</title>
+    <title>みえる？ ARテスト</title>
 
-    <link rel="stylesheet" href="./style.css">
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
 
-    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/3.4.7/aframe/build/aframe-ar.js"></script>
 
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+        }
 
-    <script src="./main.js"></script>
+        body {
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Hiragino Sans",
+                sans-serif;
+        }
+
+        .guide {
+            position: fixed;
+            left: 50%;
+            bottom: 25px;
+            transform: translateX(-50%);
+            z-index: 9999;
+
+            width: calc(100% - 40px);
+            max-width: 420px;
+            padding: 14px 18px;
+
+            background: rgba(0, 0, 0, 0.75);
+            color: white;
+
+            text-align: center;
+            font-size: 15px;
+        }
+
+        #arjs-video {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+
+            width: 100vw !important;
+            height: 100vh !important;
+
+            object-fit: cover !important;
+        }
+
+        .a-canvas {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+
+            width: 100vw !important;
+            height: 100vh !important;
+        }
+    </style>
 </head>
 
 <body>
 
-    <!-- 画面下の案内 -->
     <div class="guide" id="guide">
         HIROマーカーを映してください
     </div>
 
-    <!-- ARラベル用 -->
-    <canvas id="label-0" class="label-canvas"></canvas>
-    <canvas id="label-1" class="label-canvas"></canvas>
-    <canvas id="label-2" class="label-canvas"></canvas>
-
-    <!-- タップしたときの情報カード -->
-    <div class="modal" id="modal" aria-hidden="true">
-
-        <div class="modal-backdrop" id="modal-backdrop"></div>
-
-        <article class="info-card">
-
-            <button class="close-button" id="close-button" type="button" aria-label="閉じる">
-                ×
-            </button>
-
-            <p class="card-number" id="card-number">
-                01
-            </p>
-
-            <h1 id="card-title">
-                個展
-            </h1>
-
-            <p class="card-english" id="card-english">
-                EXHIBITION
-            </p>
-
-            <div class="card-line"></div>
-
-            <p class="card-description" id="card-description">
-                展示内容がここに入ります。
-            </p>
-
-            <div class="card-placeholder">
-                IMAGE / MOVIE
-            </div>
-
-        </article>
-
-    </div>
-
-    <!-- AR空間 -->
-    <a-scene embedded vr-mode-ui="enabled: false" renderer="
-            logarithmicDepthBuffer: true;
-            antialias: true;
-            alpha: true;
-        " arjs="
+    <a-scene embedded vr-mode-ui="enabled: false" renderer="alpha: true; antialias: true;" arjs="
             sourceType: webcam;
             debugUIEnabled: false;
             detectionMode: mono;
         ">
 
-        <a-marker id="hiro-marker" preset="hiro" smooth="true" smooth-count="10" smooth-tolerance="0.01"
-            smooth-threshold="5">
+        <a-marker id="hiro-marker" preset="hiro">
 
-            <!-- サイン01 -->
-            <a-plane class="clickable" data-spot="0" position="-0.75 0.35 0.15" rotation="-90 0 -8" width="1.25"
-                height="0.42" canvas-texture="canvas: #label-0" spot-card></a-plane>
-
-            <!-- サイン02 -->
-            <a-plane class="clickable" data-spot="1" position="0.72 0.48 -0.15" rotation="-90 0 7" width="1.45"
-                height="0.48" canvas-texture="canvas: #label-1" spot-card></a-plane>
-
-            <!-- サイン03 -->
-            <a-plane class="clickable" data-spot="2" position="-0.05 0.28 -0.95" rotation="-90 0 -2" width="1.15"
-                height="0.39" canvas-texture="canvas: #label-2" spot-card></a-plane>
+            <a-box position="0 0.5 0" scale="0.7 0.7 0.7" color="#ff0000"></a-box>
 
         </a-marker>
 
-        <!-- タップ判定 -->
-        <a-entity camera cursor="rayOrigin: mouse; fuse: false" raycaster="objects: .clickable"></a-entity>
+        <a-entity camera></a-entity>
 
     </a-scene>
+
+    <script>
+        window.addEventListener("DOMContentLoaded", function () {
+            const marker = document.getElementById("hiro-marker");
+            const guide = document.getElementById("guide");
+
+            marker.addEventListener("markerFound", function () {
+                guide.textContent = "マーカーを認識しました";
+            });
+
+            marker.addEventListener("markerLost", function () {
+                guide.textContent = "HIROマーカーを映してください";
+            });
+        });
+    </script>
 
 </body>
 
